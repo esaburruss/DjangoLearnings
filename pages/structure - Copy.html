@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Structure{% endblock %}
+
+{% block includesTop %}{% endblock %}
+
+{% block content %}
+<!-- ====================================================================== -->
+<script>
+var sorts = [];
+</script>
+<ul id="sortable">
+{% for sec in sects %}
+{% ifequal sec.length 1 %}
+<li>{{ sec.name }}</li>
+
+
+
+{% else %}
+<li>{{ sec.name }}
+<ul id="sortable{{sec.pk}}">
+<script>
+sorts[sorts.length] = "#sortable{{sec.pk}}";
+</script>
+{% for page in sec.pages %}
+<li>{{ page.name }}</li>
+{% endfor %}
+</ul>
+{% endifequal %}
+</li>
+{% endfor %}
+</ul>
+
+<div id="changeMe" class="btn">Drag</div>
+<!-- ====================================================================== -->
+{% endblock %}
+
+
+{% block includesBottom %}
+<script src="/static/js/jquery-ui.js"></script>
+<script>
+$(function() {
+	$("#sortable").sortable();
+	$("#sortable").disableSelection();
+	var i;
+	for	(i = 0; i < sorts.length; i++) {
+		$(sorts[i]).sortable();
+		$(sorts[i]).disableSelection();
+	} 
+});
+
+</script>
+{% endblock %}

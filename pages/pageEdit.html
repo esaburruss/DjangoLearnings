@@ -1,0 +1,122 @@
+
+{% extends "base.html" %}
+{% block title %}Page Editor{% endblock %}
+
+{% block includesTop %}
+<link rel="stylesheet" href="http://yui.yahooapis.com/2.9.0/build/reset/reset-min.css">
+<link rel="stylesheet" href="/static/css/stylesheet.css">
+<script src="/static/js/advanced.js" ></script>
+<script src="/static/js/wysihtml5-0.3.0.min.js" ></script>
+{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+<div class="col-lg-12">
+    <div id="wysihtml5-editor-toolbar">
+      <header>
+        <ul class="commands">
+          <li data-wysihtml5-command="bold" title="Make text bold (CTRL + B)" class="command"></li>
+          <li data-wysihtml5-command="italic" title="Make text italic (CTRL + I)" class="command"></li>
+          <li data-wysihtml5-command="insertUnorderedList" title="Insert an unordered list" class="command"></li>
+          <li data-wysihtml5-command="insertOrderedList" title="Insert an ordered list" class="command"></li>
+          <li data-wysihtml5-command="createLink" title="Insert a link" class="command"></li>
+          <li data-wysihtml5-command="insertImage" title="Insert an image" class="command"></li>
+          <li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1" title="Insert headline 1" class="command"></li>
+          <li data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h2" title="Insert headline 2" class="command"></li>
+          <li data-wysihtml5-command-group="foreColor" class="fore-color" title="Color the selected text" class="command">
+            <ul>
+              <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="silver"></li>
+              <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="gray"></li>
+              <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="maroon"></li>
+              <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="red"></li>
+              <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="purple"></li>
+              <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="green"></li>
+              <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="olive"></li>
+              <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="navy"></li>
+              <li data-wysihtml5-command="foreColor" data-wysihtml5-command-value="blue"></li>
+            </ul>
+          </li>
+          <li data-wysihtml5-command="insertSpeech" title="Insert speech" class="command"></li>
+          <li data-wysihtml5-action="change_view" title="Show HTML" class="action"></li>
+        </ul>
+      </header>
+      <div data-wysihtml5-dialog="createLink" style="display: none;">
+        <label>
+          Link:
+          <input data-wysihtml5-dialog-field="href" value="http://">
+        </label>
+        <a data-wysihtml5-dialog-action="save">OK</a>&nbsp;<a data-wysihtml5-dialog-action="cancel">Cancel</a>
+      </div>
+
+      <div data-wysihtml5-dialog="insertImage" style="display: none;">
+        <label>
+          Image:
+          <input data-wysihtml5-dialog-field="src" value="http://">
+        </label>
+        <a data-wysihtml5-dialog-action="save">OK</a>&nbsp;<a data-wysihtml5-dialog-action="cancel">Cancel</a>
+      </div>
+    </div>
+    </div>
+</div>
+	<div class="row">
+<div class="col-lg-12" style="height:750px;">    
+	<form action="/pageEditAction/{{s}}/{{p}}/" method="POST">
+	{% csrf_token %}	
+	<center><div class="input-group">
+		<span class="input-group-addon" id="hdr1">Section Title:</span>
+		<input type="text" class="form-control" id="ftxt1" placeholder="Title" aria-describedby="basic-addon1" name="sectionT" value="{{section.name}}"></input>
+	</div>
+	<div class="input-group">
+		<span class="input-group-addon or" id="hdr2">Page Title:</span>
+		<input type="text" class="form-control" id="ftxt2" placeholder="Title" aria-describedby="basic-addon1" name="pageT" value="{{page.name}}"></input>
+	</div></center>
+	<br/>
+	<section>
+		
+      <textarea class="form-control" id="wysihtml5-editor" name="contentEditBox" spellcheck="false" wrap="off" autofocus placeholder="Enter something ..." rows="20">
+		{{page.content}}
+      </textarea>
+    </section>
+<input type="submit" class="btn btn-success" value="Submit"></input></form>
+
+<br />
+<hr />
+<br />
+
+<form action="/pageDelete/{{s}}/{{p}}/" method="POST">
+{% csrf_token %}
+<div class="checkbox">
+    <label>
+      <input type="checkbox" name="del1"> Check Here to enable delete (Warning: This is Permanent)
+    </label>
+</div>
+<br /><input class="btn btn-danger" value="Delete Page" type="submit"></input>
+</form>
+
+</div>    
+</div>
+{% endblock %}
+
+{% block includesBottom %}
+<script>	
+	$(document).ready(function(){      
+		var editor = new wysihtml5.Editor("wysihtml5-editor", {
+        toolbar:     "wysihtml5-editor-toolbar",
+        stylesheets: ["http://yui.yahooapis.com/2.9.0/build/reset/reset-min.css", "/static/css/editor.css"],
+        parserRules: wysihtml5ParserRules
+      });
+      
+      editor.on("load", function() {
+        var composer = editor.composer;
+        //composer.selection.selectNode(editor.composer.element.querySelector("h1"));
+      });
+
+		$('#hdr1').css('width', '150px');
+		$('#hdr2').css('width', '150px');
+		$('#ftxt1').css('width', '250px');
+		$('#ftxt2').css('width', '250px');
+	});
+</script>
+
+{% endblock %}

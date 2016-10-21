@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Structure{% endblock %}
+
+{% block includesTop %}{% endblock %}
+
+{% block content %}
+<!-- ====================================================================== -->
+<script>
+var sorts = [];
+</script>
+<p>Drag sections and pages to re-order</p>
+<ul id="sort" class="list-group sorter">
+{% for sec in sects %}
+{% ifequal sec.length 1 %}
+<li id="s{{sec.pk}}" class="list-group-item active">{{ sec.name }}</li>
+
+
+
+{% else %}
+<li id="s{{sec.pk}}" class="list-group-item active">{{ sec.name }}
+
+<ul id="sort{{sec.pk}}" class="list-group sub">
+<script>
+sorts[sorts.length] = "#sort{{sec.pk}}";
+</script>
+{% for page in sec.pages %}
+<li id="s{{sec.pk}}p{{page.pk}}" class="list-group-item list-group-item-success">{{ page.name }}</li>
+{% endfor %}
+</ul>
+{% endifequal %}
+</li>
+{% endfor %}
+</ul>
+
+<div id="changeMe" class="btn btn-success" onClick="postOrder()">Submit</div>
+<!-- ====================================================================== -->
+{% endblock %}
+
+
+{% block includesBottom %}
+{% csrf_token %}
+<script src="/static/js/jquery-ui.js"></script>
+<script>
+$(function() {
+	$("#sort").sortable();
+	$("#sort").disableSelection();
+	var i;
+	for	(i = 0; i < sorts.length; i++) {
+		$(sorts[i]).sortable();
+		$(sorts[i]).disableSelection();
+	} 
+});
+
+function getSort(){
+	var allListElements = $( "li" );
+	var aaa = new Array();
+	aaa = $('#sort').find(allListElements).map(function(){
+		return this.id;}).get();
+	//console.log(treeTraversal);
+	var i
+	return aaa;
+}
+
+function postOrder(){
+	var array = getSort();
+	//console.log(array);
+	//var parameters = {"array1[]": array};
+	//$.post('/test/', {'array1[]': array});
+	$.ajax({
+        type: 'POST',
+        url: '/reOrder/',
+        data: {'array1[]': array},
+    });
+}
+
+// using jQuery
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+
+</script>
+{% endblock %}

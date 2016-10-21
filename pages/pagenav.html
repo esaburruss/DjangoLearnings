@@ -1,0 +1,24 @@
+<ul>
+{% for sec in sects %}
+
+
+
+{% ifequal sec.length 1 %}
+<li><a href=''>{{ sec.name }}</a>
+
+
+
+{% else %}
+<li class="dropdown">
+<a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ sec.name }} <span class="caret"></span></a>
+<ul class="dropdown-menu" role="menu">
+{% for page in sec.pages %}
+<li><a href=''>{{ page.name }}</a></li>
+{% endfor %}
+</ul>
+{% endifequal %}
+
+
+</li>
+{% endfor %}
+</ul>
